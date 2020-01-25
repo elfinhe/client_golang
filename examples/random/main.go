@@ -90,9 +90,10 @@ func main() {
 		for {
 			v := (rand.NormFloat64() * *normDomain) + *normMean
 			rpcDurations.WithLabelValues("normal").Observe(v)
-			rpcDurationsHistogram.ObserveWithExemplar(
-				// Demonstrate exemplar support with a dummy ID. This would be
-				// something like a trace ID in a real application.
+			// Demonstrate exemplar support with a dummy ID. This would be
+			// something like a trace ID in a real application.
+			// Note the necessary type assertion.
+			rpcDurationsHistogram.(prometheus.ExemplarObserver).ObserveWithExemplar(
 				v, prometheus.Labels{"dummyID": fmt.Sprint(rand.Intn(100000))},
 			)
 			time.Sleep(time.Duration(75*oscillationFactor()) * time.Millisecond)
